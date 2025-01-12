@@ -39,6 +39,7 @@ namespace WSB_RadioForum.Controllers
             }
 
             var userPost = await _context.UserPost
+                .Include(up => up.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userPost == null)
             {
