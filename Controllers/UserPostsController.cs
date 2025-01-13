@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,19 +17,22 @@ namespace WSB_RadioForum.Controllers
     public class UserPostsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UserPostsController(ApplicationDbContext context)
+        public UserPostsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
-
         // GET: UserPosts
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.UserPost.ToListAsync());
+            var userPosts = await _context.UserPost.ToListAsync();
+            var userEmails = await _userManager.Users.ToDictionaryAsync(u => u.Id, u => u.Email);
+            ViewBag.UserEmails = userEmails;
+            return View(userPosts);
         }
-
         // GET: UserPosts/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
@@ -46,9 +50,14 @@ namespace WSB_RadioForum.Controllers
                 return NotFound();
             }
 
+            var userEmail = await _userManager.Users
+                .Where(u => u.Id == userPost.UserId)
+                .Select(u => u.Email)
+                .FirstOrDefaultAsync();
+            ViewBag.UserEmail = userEmail;
+
             return View(userPost);
         }
-
         // GET: UserPosts/Create
         public IActionResult Create()
         {
@@ -93,6 +102,7 @@ namespace WSB_RadioForum.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,DateAdded")] UserPost userPost)
         {
+            userPost.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != userPost.Id)
             {
                 return NotFound();

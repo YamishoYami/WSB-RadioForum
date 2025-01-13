@@ -1,0 +1,95 @@
+﻿/* custom-styles.css */
+
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+background - color: #f8f9fa;
+    color: #343a40;
+    margin: 0;
+padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+}
+
+/* Header styles */
+header {
+    background-color: #007bff;
+   color: black;
+padding: 10px 0;
+}
+
+header.navbar - brand {
+color: white;
+    font - size: 1.5rem;
+    font - weight: bold;
+}
+
+header.nav - link {
+color: white;
+}
+
+header.nav - link:hover {
+    color: #d4d4d4;
+}
+
+/* Footer styles */
+footer {
+    background-color: #343a40;
+    color: white;
+padding: 10px 0;
+text - align: center;
+}
+
+/* Main content styles */
+main {
+    background-color: white;
+padding: 20px;
+border - radius: 5px;
+}
+
+/* Form styles */
+form.form - group {
+    margin - bottom: 15px;
+}
+
+form.form - control {
+    border - radius: 5px;
+border: 1px solid #ced4da;
+    padding: 10px;
+}
+
+form.btn - primary {
+    background - color: #007bff;
+    border - color: #007bff;
+}
+
+form.btn - primary:hover {
+    background-color: #0056b3;
+    border - color: #004085;
+}
+
+/* Table styles */
+table {
+    width: 100 %;
+border - collapse: collapse;
+margin - bottom: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+border: 1px solid #dee2e6;
+}
+
+table th
+{
+    background-color: #007bff;
+    color: black;
+}
+
+table tr:nth - child(even) {
+    background - color: #f2f2f2;
+}

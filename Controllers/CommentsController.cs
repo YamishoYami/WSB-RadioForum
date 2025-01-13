@@ -55,18 +55,20 @@ namespace WSB_RadioForum.Controllers
         }
 
         // POST: Comments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create([Bind("Id,Content,DateAdded,UserId,UserPostId")] Comments comments)
+        public async Task<IActionResult> Create([Bind("Id,Content,DateAdded,UserId,UserPostId")] Comments comments, string returnUrl = null)
         {
             comments.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
                 _context.Add(comments);
                 await _context.SaveChangesAsync();
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction(nameof(Index));
             }
             ViewData["UserPostId"] = new SelectList(_context.UserPost, "Id", "Id", comments.UserPostId);
