@@ -17,9 +17,9 @@ namespace WSB_RadioForum.Controllers
     public class UserPostsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserPostsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public UserPostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -44,6 +44,7 @@ namespace WSB_RadioForum.Controllers
 
             var userPost = await _context.UserPost
                 .Include(up => up.Comments)
+                .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userPost == null)
             {

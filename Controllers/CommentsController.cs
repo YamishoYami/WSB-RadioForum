@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WSB_RadioForum.Data;
+using WSB_RadioForum.Enums;
 using WSB_RadioForum.Models;
 
 namespace WSB_RadioForum.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,7 +26,7 @@ namespace WSB_RadioForum.Controllers
         // GET: Comments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Comments.Include(c => c.UserPost);
+            var applicationDbContext = _context.Comments.Include(c => c.UserPost).Include(c => c.User);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -38,6 +40,7 @@ namespace WSB_RadioForum.Controllers
 
             var comments = await _context.Comments
                 .Include(c => c.UserPost)
+                .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comments == null)
             {

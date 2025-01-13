@@ -50,7 +50,7 @@
                     @Html.DisplayNameFor(model => model.Comments.First().DateAdded)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Comments.First().UserId)
+                    @Html.DisplayNameFor(model => model.Comments.First().User)
                 </th>
             </tr>
         </thead>
@@ -65,7 +65,7 @@
                     @Html.DisplayFor(modelItem => comment.DateAdded)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => comment.UserId)
+                    @Html.DisplayFor(modelItem => comment.User.UserName)
                 </td>
             </tr>
         }
