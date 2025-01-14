@@ -1,4 +1,6 @@
-﻿@model IEnumerable<WSB_RadioForum.Models.UserPost>
+﻿@using System.Security.Claims
+
+@model IEnumerable<WSB_RadioForum.Models.UserPost>
 
 @{
     ViewData["Title"] = "Index";
@@ -12,42 +14,37 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateAdded)
-            </th>
-            <th>
-                User Email
-            </th>
-            <th></th>
-        </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateAdded)
-                </td>
-                <td>
-                    @userEmails[item.UserId]
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                <td colspan="4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>@Html.DisplayFor(modelItem => item.Title)</strong>
+                        </div>
+                        <div>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+                            @if (item.UserId != null && User?.FindFirst(ClaimTypes.NameIdentifier)?.Value != null &&
+                           (item.UserId == User.FindFirst(ClaimTypes.NameIdentifier).Value || User.IsInRole("Admin")))
+
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                            }
+                            else
+                            {
+
+                            }
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        @Html.DisplayFor(modelItem => item.Content)
+                    </div>
+                    <div class="text-muted">
+                        <small>@Html.DisplayFor(modelItem => item.DateAdded) - @userEmails[item.UserId]</small>
+                    </div>
                 </td>
             </tr>
         }

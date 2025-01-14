@@ -13,7 +13,7 @@ using WSB_RadioForum.Models;
 
 namespace WSB_RadioForum.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -155,15 +155,19 @@ namespace WSB_RadioForum.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, string returnUrl = null)
         {
             var comments = await _context.Comments.FindAsync(id);
             if (comments != null)
             {
                 _context.Comments.Remove(comments);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
             return RedirectToAction(nameof(Index));
         }
 

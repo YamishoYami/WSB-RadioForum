@@ -18,7 +18,7 @@ namespace WSB_RadioForum.Data
             //Seed Default User
             var defaultUser = new ApplicationUser
             {
-                UserName = "superadmin",
+                UserName = "superadmin@gmail.com",
                 Email = "superadmin@gmail.com",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true

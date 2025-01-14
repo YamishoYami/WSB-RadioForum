@@ -52,46 +52,70 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Comments.First().User)
                 </th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th>
+                        Admin options
+                    </th>
+                }
             </tr>
         </thead>
         <tbody>
-        @foreach (var comment in Model.Comments)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => comment.Content)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => comment.DateAdded)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => comment.User.UserName)
-                </td>
-            </tr>
-        }
+            @foreach (var comment in Model.Comments)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => comment.Content)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => comment.DateAdded)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => comment.User.UserName)
+                    </td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            <form asp-controller="Comments" asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                <input type="hidden" name="id" value="@comment.Id" />
+                                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "UserPosts", new { id = Model.Id })" />
+                                <input type="submit" value="Delete" class="btn btn-danger" />
+                            </form>
+                        </td>
+                    }
+                </tr>
+            }
         </tbody>
     </table>
 </div>
 <div>
-       
-            <h4>Add Comment</h4>
-            <hr />
-            <form asp-controller="Comments" asp-action="Create" method="post">
-                <div class="form-group">
-                    <label asp-for="Content" class="control-label"></label>
-                    <textarea asp-for="Content" class="form-control"></textarea>
-                    <span asp-validation-for="Content" class="text-danger"></span>
-                </div>
-                <input type="hidden" name="UserPostId" value="@Model.Id" />
-                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "UserPosts", new { id = Model.Id })" />
-                <div class="form-group">
-                    <input type="submit" value="Add Comment" class="btn btn-primary" />
-                </div>
-            </form>
-    
+    <h4>Add Comment</h4>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <hr />
+        <form asp-controller="Comments" asp-action="Create" method="post">
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <input type="hidden" name="UserPostId" value="@Model.Id" />
+            <input type="hidden" name="returnUrl" value="@Url.Action("Details", "UserPosts", new { id = Model.Id })" />
+            <div class="form-group">
+                <input type="submit" value="Add Comment" class="btn btn-primary" />
+            </div>
+        </form>    
+    }
+    else
+    {
+        <h4>Please log in to be able to comment</h4>
+    }
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a>
+    @if (User.Identity.Name == userEmail)
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a>
+    }
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
 @section Scripts {
