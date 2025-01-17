@@ -16,13 +16,15 @@ namespace WSB_RadioForum.Controllers
     [Authorize]
     public class UserPostsController : Controller
     {
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserPostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public UserPostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
         // GET: UserPosts
         [AllowAnonymous]
@@ -69,11 +71,23 @@ namespace WSB_RadioForum.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content,DateAdded")] UserPost userPost)
+        public async Task<IActionResult> Create([Bind("Id,Title,Content,DateAdded,imageFile")] UserPost userPost)
         {
             userPost.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
+                if (userPost.imageFile != null)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + userPost.imageFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await userPost.imageFile.CopyToAsync(fileStream);
+                    }
+                    userPost.ImagePath = "/images/" + uniqueFileName;
+                }
+
                 _context.Add(userPost);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -101,7 +115,7 @@ namespace WSB_RadioForum.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,DateAdded")] UserPost userPost)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,DateAdded,imageFile,DeleteImage,ImagePath")] UserPost userPost)
         {
             userPost.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != userPost.Id)
@@ -113,6 +127,22 @@ namespace WSB_RadioForum.Controllers
             {
                 try
                 {
+                    if (userPost.DeleteImage == true)
+                    {
+                        userPost.ImagePath = null;
+                    }
+                    else if (userPost.imageFile != null)
+                    {
+                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + userPost.imageFile.FileName;
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await userPost.imageFile.CopyToAsync(fileStream);
+                        }
+                        userPost.ImagePath = "/images/" + uniqueFileName;
+                    }
+
                     _context.Update(userPost);
                     await _context.SaveChangesAsync();
                 }

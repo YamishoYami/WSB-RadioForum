@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -24,8 +24,19 @@
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="imageFile" class="control-label">Upload Image</label>
+                <input type="file" asp-for="imageFile" class="form-control" />
+                <span asp-validation-for="imageFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeleteImage" class="control-label">Delete Image</label>
+                <input type="checkbox" asp-for="DeleteImage"/>
+                <span asp-validation-for="DeleteImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
+            <input type="hidden" asp-for="ImagePath" />
         </form>
     </div>
 </div>
